@@ -12,3 +12,6 @@ c/**/test*
 ## java programing
 
 java/*.class
+
+## test files
+test*
