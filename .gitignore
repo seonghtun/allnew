@@ -22,3 +22,7 @@ scala/**/target
 
 ## sbt
 *sbt.json
+
+## nodejs
+node/**/node_modules
+
