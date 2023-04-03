@@ -1,0 +1,3 @@
+use test
+db.things.update({empno:1101},{$set:{edith:}})
+db.things.find({empno:1101})
