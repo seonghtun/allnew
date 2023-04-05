@@ -1,4 +1,5 @@
 use test
+
 db.ord.drop()
 db.ord_detail.drop()
 
