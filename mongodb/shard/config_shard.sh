@@ -4,6 +4,9 @@ systemctl stop mongod
 #stop shard process
 ./stop_shard.sh
 
+export IP_TEMP=$(ip addr | grep enp0s3 | grep inet | cut -d " " -f6 | cut -d "/" -f1 )
+echo $IP_TEMP
+
 # remove data directory
 if [ -d data ]; then
     rm -rf ./data
@@ -16,7 +19,7 @@ touch /shard/data/logs/configsvr.log
 
 mongod --config /shard/mongodConfig.conf &
 sleep 3s
-mongo 192.168.1.54:27019 < rs.init
+mongo $IP_TEMP:27019 < rs.init
 
 # router Server
 touch /shard/data/logs/mongorouter.log
@@ -30,7 +33,7 @@ touch /shard/data/logs/shard1.log
 
 mongod --config /shard/mongodShard1.conf &
 sleep 2s
-mongo 192.168.1.54:27021 < rs.init
+mongo $IP_TEMP:27021 < rs.init
 
 # shard1 Sever
 mkdir -pv /shard/data/shard2db
@@ -38,7 +41,7 @@ touch /shard/data/logs/shard2.log
 
 mongod --config /shard/mongodShard2.conf &
 sleep 2s
-mongo 192.168.1.54:27022 < rs.init
+mongo $IP_TEMP:27022 < rs.init
 
 # process status
 ps -ef | grep mongo
@@ -49,4 +52,4 @@ netstat -ntlp
 
 # mongo 192.168.1.54:27017
 
-mongo 192.168.1.54:27017 < rs.addShard 
+mongo $IP_TEMP:27017 < rs.addShard 
