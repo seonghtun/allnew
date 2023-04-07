@@ -42,3 +42,9 @@ oracle/node/dbConfig.js
 
 ## maven
 maven/**/maven-*/
+
+## enviroment files
+.env
+
+## mysql
+node/**/package.json
