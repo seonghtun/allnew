@@ -10,7 +10,6 @@ c/**/*.o
 c/**/test*
 
 ## java programing
-
 java/*.class
 
 ## test files
@@ -35,3 +34,11 @@ python/**/__pycache__/
 mongodb/**/*.json
 mongodb/**/*.mp4
 mongodb/backup
+
+## oracle
+oracle/node/node_modules
+oracle/node/package-lock.json
+oracle/node/dbConfig.js
+
+## maven
+maven/**/maven-*/
