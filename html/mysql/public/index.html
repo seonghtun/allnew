@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>mysql - st_info</title>
+</head>
+
+<body>
+  <h3>mysql - st_info</h3>
+  <hr />
+  <form name="userForm" action="/insert" method="GET">
+    ST_ID : <input type="text" id="id" name="id" /><br />
+    NAME : <input type="text" name="name" /><br />
+    DEPT : <input type="text" name="dept" />
+    <p>
+      <input type="button" onclick='document.dr.location.href="/Hello"' value="GET /Hello" />
+      <input type="button" onclick='document.dr.location.href="/select"' value="Select st_info">
+      <!-- <button onclick="document.dr.location.href='/select'">Select st_info</button> -->
+      <input type="submit" value="Insert st_info">
+    </p>
+  </form>
+  <hr>
+  <iframe name="dr" class="iframe-preview center" borderFrame="2" width="90%" height="500"></iframe>
+
+
+
+</body>
+
+</html>

@@ -56,3 +56,5 @@ html/**/[0-9]
 html/**/*.png
 html/**/*.jpg
 html/**/*.apache2
+html/**/node_modules
+html/**/package*
