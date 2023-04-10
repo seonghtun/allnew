@@ -48,3 +48,11 @@ maven/**/maven-*/
 
 ## mysql
 node/**/package.json
+
+## html
+html/**/media
+html/**/[0-9][0-9]
+html/**/[0-9]
+html/**/*.png
+html/**/*.jpg
+html/**/*.apache2
