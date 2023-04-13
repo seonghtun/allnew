@@ -46,7 +46,7 @@ app.post('/login', (req, res) => {
         if (id === 'root' || id === 'admin') {
             res.redirect('member.html');
         } else {
-            res.redirect('main.html');
+            res.redirect('user.html');
         }
     }
 })
@@ -54,12 +54,13 @@ app.post('/login', (req, res) => {
 app.post('/register', (req, res) => {
     const { id, pw } = req.body;
     if (id === "") {
-        res.redirect("/");
+        res.redirect("/register.html");
         console.log("insert to ID")
     }
     else {
         let result = connection.query('select * from user where userid=?', [id]);
-        if (result[0].userid === id) {
+        console.log("result :", result);
+        if (result.length > 0) {
             res.writeHead(200);
             var template = `
             <!DOCTYPE html>
