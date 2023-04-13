@@ -62,3 +62,4 @@ html/**/package-lock.json
 # img
 *.jpg
 *.png
+*.gif
