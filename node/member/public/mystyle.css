@@ -1,0 +1,74 @@
+/* mystyle.css */
+body {
+    color: rgba(6, 0, 7, 0.5);
+    margin-left: 30px;
+    margin-right: 30px;
+    background-image: url('media/moon.jpg');
+    background-position: center top;
+    font-family: monospace;
+    cursor: pointer;
+}
+
+/* hr {
+    background-color: aliceblue;
+    border: 0px;
+    height: 1px;
+} */
+
+div.input-box {
+    padding: 50px;
+}
+
+p.p-hr {
+    color: wheat;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: wheat;
+    padding: 7px 0px;
+    margin: 30px 20px 0px 20px;
+}
+
+input.data {
+    color: wheat;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+}
+
+input:focus {
+    outline: none;
+}
+
+h3 {
+    text-align: center;
+}
+
+
+a {
+    font-family: monospace;
+    font-size: 20px;
+    text-decoration: none;
+    color: rgba(233, 204, 170, 0.5)
+}
+
+div.box {
+    opacity: 0.7;
+    margin: auto;
+    border: none;
+    padding: 50px;
+    width: 400px;
+    height: 50%;
+    text-align: center;
+    margin-top: 200px;
+}
+
+.buttons {
+    color: wheat;
+    background-color: darkblue;
+    border: none;
+    width: 100px;
+    border-radius: 10px;
+}
+
+.buttons-p {
+    position: center center;
+}
