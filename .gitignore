@@ -58,3 +58,7 @@ html/**/*.jpg
 html/**/*.apache2
 html/**/node_modules
 html/**/package-lock.json
+
+# img
+*.jpg
+*.png
