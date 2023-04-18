@@ -65,9 +65,6 @@ function template_result(result, res) {
     res.end(template);
 }
 
-app.get('/user', (req, res) => {
-    res.redirect('User.html');
-})
 
 app.get('/select', (req, res) => {
     const result = connection.query('select * from user');
@@ -83,8 +80,7 @@ app.get('/selectQuery', (req, res) => {
     // const { id , password } = req.query;
     const id = req.query.id;
     if (id === "") {
-        res.end(`ID 를 입력해주세요!`)
-        return;
+        res.write("<script>alert('User-id를 입력하세요.')</script>");
     }
     else {
         // const result = connection.query(`select * from user where id = ${id}`);
@@ -119,13 +115,13 @@ app.post('/selectQuery', (req, res) => {
 app.post('/insert', (req, res) => {
     const { id, pw } = req.body;
     if (id === "" && pw === "") {
-        res.send('ID 와 Password를 입력해주세요!');
+        res.write("<script>alert('User-id와 Password를 입력해주세요.')</script>");
     }
     else if (id === "") {
-        res.send(`ID 를 입력해주세요!`);
+        res.write("<script>alert('User-id를 입력하세요.')</script>");
     }
     else if (pw === "") {
-        res.send(`Password 를 입력해주세요!`);
+        res.write("<script>alert('Password 를 입력하세요.')</script>");
     }
     else {
         let result = connection.query("select * from user where userid=?", [id]);
@@ -157,13 +153,13 @@ app.post('/insert', (req, res) => {
 app.post('/update', (req, res) => {
     const { id, pw } = req.body;
     if (id === "" && pw === "") {
-        res.send('ID 와 Password를 입력해주세요!');
+        res.write("<script>alert('User-id와 Password를 입력해주세요.')</script>");
     }
     else if (id === "") {
-        res.send(`ID 를 입력해주세요!`)
+        res.write("<script>alert('User-id를 입력하세요.')</script>");
     }
     else if (pw === "") {
-        res.send(`Password 를 입력해주세요!`)
+        res.write("<script>alert('Password를 입력하세요.')</script>");
     }
     else {
         result = connection.query("update user set passwd=? where userid=?", [pw, id]);
@@ -175,7 +171,7 @@ app.post('/update', (req, res) => {
 app.post('/delete', (req, res) => {
     const id = req.body.id;
     if (id === "") {
-        res.send(`ID 를 입력해주세요!`);
+        res.write("<script>alert('User-id를 입력하세요.')</script>");
     } else {
         let result = connection.query("select * from user where userid=?", [id]);
 
@@ -188,4 +184,84 @@ app.post('/delete', (req, res) => {
         }
     }
 })
+
+app.post('/login', (req, res) => {
+    const { id, pw } = req.body;
+    if (id === "" && pw === "") {
+        res.write("<script>alert('User-id를 입력하세요.')</script>");
+        // res.redirect('/login-page');
+    }
+    else if (id === "") {
+        // res.send("ID를 입력해주세요.");
+        res.write("<script>alert('User-id를 입력하세요.')</script>");
+        // res.write("<script>alert('User-id를 입력하세요.')</script>");
+    }
+    else if (pw === "") {
+        // res.send("Password를 입력해주세요.");
+        res.write("<script>alert('User-id를 입력하세요.')</script>");
+        // res.write("<script>alert('Password를 입력하세요.')</script>");
+    }
+    else {
+        const result = connection.query('select * from user where userid=? and passwd=?', [id, pw]);
+        if (result.length === 0) {
+            res.redirect('error.html');
+        }
+        else {
+            console.log(result);
+            if (id === 'root' || id === 'admin') {
+                res.redirect('admin.html');
+            } else {
+                res.redirect('user.html');
+            }
+        }
+    }
+})
+
+app.get('/login-page', (req, res) => {
+    res.sendFile('/allnew/node/dynamicdb/public/login.html');
+})
+
+app.post('/register', (req, res) => {
+    const { id, pw } = req.body;
+    if (id === "") {
+        res.redirect("/register.html");
+        console.log("insert to ID")
+    }
+    else {
+        let result = connection.query('select * from user where userid=?', [id]);
+        console.log("result :", result);
+        if (result.length > 0) {
+            res.writeHead(200);
+            var template = `
+            <!DOCTYPE html>
+            <html>
+
+            <head>
+                <meta charset="utf-8">
+                <link href="mystyle.css" type="text/css" rel="stylesheet">
+                <title>
+                    Error
+                </title>
+            </head>
+
+            <body>
+                <div>
+                    <h3 style="margin-left:30px">Register Failed</h3>
+                    <h4 style="margin-left:30px">이미 존재하는 아이디입니다</h4>
+                    
+                    <a href="register.html" style="margin-left:30px">다시 시도하기</a>
+                </div>
+            </body>
+
+            </html>
+            `;
+            res.end(template);
+        } else {
+            const result = connection.query("insert into user values (?,?)", [id, pw]);
+            console.log(result);
+            res.redirect('/login-page');
+        }
+    }
+})
+
 module.exports = app;

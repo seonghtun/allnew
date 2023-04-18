@@ -1,5 +1,5 @@
 body {
-    color: rgba(196, 151, 6, 0.5);
+    color: rgba(120, 224, 0);
     background-color: rgba(0, 100, 0, 0.808);
     font-size: 20px;
 }
@@ -63,7 +63,7 @@ iframe {
     margin-top: 300px;
 }
 
-.User-a {
+.login-a {
     font-size: 150px;
     color: rgb(110, 204, 81);
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -78,4 +78,9 @@ iframe {
 .head-text {
     text-align: center;
     color: wheat;
+}
+
+.base-a {
+    text-decoration: none;
+    color: rgba(120, 224, 0, 0.747);
 }
