@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <h1>Quiz8</h1>
+    <h3 style="text-align: center;">Book prototype 실습</h3>
+    <hr>
+
+    <script>
+        /*
+        let state = { 0: "대여중", 1: "대여가능" };
+        // javascript property ver~
+        
+        function book(title, author, totalPage, category, price) {
+            this.title = title;
+            this.author = author;
+            this.totalPage = totalPage;
+            this.category = category;
+            this.price = price;
+            this.rentalUser = "";
+            this.rentalDay = 0;
+            this.returnDay = 0;
+            this.rentalState = 1;
+            this.remainPage = 0;
+
+            this.reading = function (page) {
+                this.remainPage = this.totalPage - page;
+                return this.remainPage;
+            };
+            this.rental = function (user, day) {
+                if (this.rentalState == 0) {
+                    document.write("현재 " + this.title + " 대여 중인 책이라 대여가 불가능합니다.<br><hr>");
+                    document.write("반납일은 " + this.returnDay + "일 입니다.");
+                }
+                else {
+                    let today = new Date().getDate()
+                    this.rentalUser = user;
+                    this.rentalDay = day;
+                    this.rentalState = 0;
+                    if (today + day > 31) this.returnDay = today + day - 31;
+                    else this.rentalDay = today + day;
+                }
+                return;
+
+            }
+        }
+        */
+        /* javascript Object ver
+        let book = {
+            // <property>
+            title: "오십에 읽는 논어",
+            author: "최종엽",
+            totalPage: 299,
+            category: "철학",
+            price: 16000,
+            rentalUser: "",
+            rentalDay: 0,
+            rentalState: 1,
+            returnDay: 0,
+            remainPage: 0,
+
+            // <method>
+            reading: function (page) {
+                this.remainPage = this.totalPage - page;
+                return this.remainPage;
+            },
+            rental: function (user, day) {
+                if (this.rentalState == 0) {
+                    document.write("현재 " + this.title + " 대여 중인 책이라 대여가 불가능합니다.<br><hr>");
+                    documnet.write("반납일은 : " + this.returnDay);
+                }
+                else {
+                    this.rentalUser = user;
+                    this.rentalDay = day;
+                    this.returnDay = day;
+                    this.rentalState = 0;
+                }
+                return;
+
+            }
+        }
+        <script>
+        let fifteen = new book("오십에 읽는 논어", "최종엽", 299, "철학", 16000);
+        document.write("제목 : " + fifteen.title + "<br>");
+        document.write("작가 : " + fifteen.author + "<br>");
+        document.write("총 페이지 : " + fifteen.totalPage + "<br>");
+        document.write("카테고리 : " + fifteen.category + "<br>");
+        document.write("가격 : " + fifteen.price + "<br>");
+        document.write("<hr>");
+
+        document.write("현재 전체 페이지 " + fifteen.totalPage + "page 중 잔여 페이지가 " + fifteen.reading(50) + "페이지 남으셨습니다. <br><hr>");
+        fifteen.rental("문준현", 30);
+        document.write("현재 " +
+            fifteen.title + "는 " + fifteen.rentalUser + "님이 " + state[fifteen.rentalState] + " 이고 반납일은 " + fifteen.returnDay + "일 입니다. " + "<br>잔여 페이지는"
+            + fifteen.remainPage + "페이지 입니다.<br><hr>");
+        fifteen.rental("사공", 20);
+        */
+        let state = { 0: "대여중", 1: "대여가능" }
+        function Book(title, author, totalPage, category, price) {
+            this.title = title;
+            this.author = author;
+            this.totalPage = totalPage;
+            this.category = category;
+            this.price = price;
+            this.leftover = totalPage;
+            // 메소드 작성
+            this.reading = function (page) {
+                this.leftover -= page;
+                return this.leftover;
+            };
+            this.rental = function (user, day) {
+                this.rentalUser = user;
+                this.rentalDay = day;
+                this.rentalState = 0;
+                return this.rentalState;
+            };
+        };
+    </script>
+    <script>
+        let libBook = new Book("스며드는 리눅스", "문준현", 350, "IT", 30000);
+        document.write("<h1>Book</h1> ");
+        document.write("제목 : " + libBook.title + "<br>");
+        document.write("저자 : " + libBook.author + "<br>");
+        document.write("장르 : " + libBook.category + "<br>");
+        document.write("가격 : " + libBook.price + "원 <br>");
+        document.write("<hr />");
+
+        document.write(
+            "현재 전체 페이지 " +
+            libBook.totalPage +
+            " 중 잔여 페이지가 " +
+            libBook.reading(50) +
+            "페이지 남으셨습니다. <br><hr />"
+        );
+        libBook.rental("임예준", 30);
+        document.write(
+            "현재 " +
+            libBook.title +
+            "는 " +
+            libBook.rentalUser +
+            "님에게 " +
+            libBook.rentalDay +
+            "일 동안 " +
+            state[libBook.rentalState] +
+            "입니다."
+        );
+    </script>
+</body>
+
+</html>

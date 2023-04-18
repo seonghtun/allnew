@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <h1>Quiz6</h1>
+    <h3 style="text-align: center;">2023.3.6.09:00:00 기준 현재까지의 경과시간 구하기(시간?)</h3>
+    <hr>
+    <script>
+        let now = new Date();
+        let march = new Date(2023, 2, 6, 9);
+        let diff = now - march;
+        document.write("이게 되나: " + march.getTime());
+        document.write("현재시간: " + now.toLocaleString() + '<br><hr>');
+        document.write("기준 시간: " + march.toLocaleString() + '<br><hr>');
+        document.write("경과시간 - 일: " + (diff / (24 * 60 * 60 * 1000)).toFixed(2) + "<br>");
+        document.write("경과시간 - 시: " + (diff / (60 * 60 * 1000)).toFixed(2) + "<br>");
+        document.write("경과시간 - 분: " + (diff / (60 * 1000)).toFixed(2) + "<br>");
+        document.write("경과시간 - 초: " + (diff / (1000)).toFixed(2) + "<br>");
+        document.write("경과시간 - 밀리초: " + diff.toFixed(2) + "<br>");
+    </script>
+</body>
+
+</html>

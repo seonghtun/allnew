@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>
+        Car 객체 만들기
+    </title>
+</head>
+
+<body>
+    <h1 style="text-align: center;">prototype을 이용한 Car 객체를 만들어 볼겁니다.</h1>
+    <hr>
+    <script>
+        function Car(brand, grade, maxFuel, displacement, price) {
+            this.brand = brand;
+            this.grade = grade;
+            this.maxFuel = maxFuel;
+            this.displacement = displacement;
+            this.price = price;
+            this.nav = [];
+            this.mileage = 0;
+            this.currentFuel = 0;
+            this.gasMileage = 1;
+
+            this.info = () => {
+                document.write("<h2>Car</h2>");
+                document.write("제조사: " + this.brand + "<br>");
+                document.write(" 차 종: " + this.grade + "<br>");
+                document.write(" 배기량: " + this.displacement + "<br>");
+                document.write(" 최대 주유량: " + this.maxFuel + "<br>");
+                document.write(" 가격: " + this.price + "<br>");
+                document.write("<hr>");
+            }
+            this.drive = (from, to, distance) => {
+                if (this.currentFuel - (distance / this.gasMileage) < 0) {
+                    document.write("목적지 까지 갈수없는 연료량입니다!<br>");
+                    document.write("주유가 필요합니다!!<br>");
+                    document.write("<hr>");
+                    this.refueling(-(this.currentFuel - (distance / this.gasMileage)) + 10);
+                    this.drive(from, to, distance);
+                } else {
+                    this.nav.push([from, to, distance])
+                    this.mileage += distance;
+                    this.currentFuel -= (distance / this.gasMileage);
+                    document.write(this.brand + " 차량이 " + from + " 에서 " + to + " 까지 " + distance +
+                        " Km 주행하셨습니다.<br>");
+                    document.write("잔여 연료량은 " + this.currentFuel + " 입니다.<br>");
+                    if (this.currentFuel < this.maxFuel * (1 / 10)) {
+                        document.write("주유가 필요합니다!!<br>");
+                    }
+                    document.write("<hr>");
+                }
+                return this.mileage;
+            }
+            this.refueling = (amount) => {
+                document.write(amount + "L 주유를 요청하셨습니다.<br>");
+                document.write("현재 연료량은 " + this.currentFuel + "L 입니다.<br>");
+                if (this.maxFuel < amount + this.currentFuel) {
+                    document.write("최대 주유량이 " + this.maxFuel + "L 입니다.<br>");
+                    document.write((this.maxFuel - this.currentFuel) + "L 주유 되었습니다.<br>");
+                    this.currentFuel = this.maxFuel
+                } else {
+                    this.currentFuel += amount
+                    document.write(amount + "L 주유하여 잔여 연료량은 " + this.currentFuel + "L 입니다.<br>");
+                }
+                return this.currentFuel;
+            }
+        }
+    </script>
+    <h2>새차 구매</h2>
+    <script>
+        let benz = new Car("Benz", "SUV", 900, 4000, 3000);
+        benz.info()
+        benz.drive("Seoul", "Busan", 400);
+        benz.drive("Busan", "Incheon", 460);
+        benz.refueling(860);
+
+        let bmw = new Car("BMW", "Seoul", 500, 2500, 2000);
+        bmw.info();
+        bmw.drive("jejusi", "Aewol", 102);
+        bmw.refueling(460)
+        bmw.drive("Aewol", "Hyeopjae", 90);
+
+    </script>
+</body>
+
+</html>

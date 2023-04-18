@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>
+        요금제 객체
+    </title>
+</head>
+
+<body>
+    <h1>요금제</h1>
+    <script>
+        function DataPlan(price, dataVolume, callVolume, smsVolume) {
+            this.price = price;
+            this.dataVolume = dataVolume;
+            this.callVolume = callVolume;
+            this.smsVolume = smsVolume;
+
+            this.info = () => {
+                document.write(`
+                    <hr>
+                    가격 : ${this.price}<br>
+                    데이터량 : ${this.dataVolume}G<br>
+                    통화 : ${this.callVolume}<br>
+                    메세지 : ${this.smsVolume}<br>
+                    `)
+            }
+            this.remove = () => {
+                this.price = 0;
+                this.dataVolume = 0;
+                this.callVolume = 0;
+                this.smsVolume = 0;
+                this.info();
+            }
+        }
+    </script>
+    <h3>요금제 등록해봅시다.</h3>
+    <script>
+        let fiff = new DataPlan(55000, 12, "무제한", "무제한");
+        fiff.info();
+        fiff.remove();
+    </script>
+</body>
+
+</html>
