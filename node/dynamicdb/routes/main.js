@@ -248,7 +248,6 @@ app.post('/register', (req, res) => {
                 <div>
                     <h3 style="margin-left:30px">Register Failed</h3>
                     <h4 style="margin-left:30px">이미 존재하는 아이디입니다</h4>
-                    
                     <a href="register.html" style="margin-left:30px">다시 시도하기</a>
                 </div>
             </body>

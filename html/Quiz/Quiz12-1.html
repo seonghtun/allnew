@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>숫자 야구게임</title>
+    <style>
+        #guess-box {
+            text-align: right;
+        }
+
+        div {
+            text-align: center;
+        }
+
+        div>div {
+            display: inline-block;
+            margin-right: 50px
+        }
+
+        table {
+            margin: auto;
+        }
+
+        td {
+            width: 55px;
+            height: 55;
+        }
+
+        input[type=button] {
+            background-color: white;
+            border: 1px solid orchid;
+        }
+
+        .number {
+
+            width: 50px;
+            height: 50px;
+        }
+
+        iframe {
+            position: absolute;
+            top: 50px;
+            height: 300px;
+            border: 3px dotted orchid;
+        }
+
+        .clear {
+            width: 165px;
+        }
+    </style>
+    <script>
+        function click_num(obj) {
+            obj.style.color = 'white';
+            obj.style.backgroundColor = 'orchid';
+            let guess = document.getElementById('guess-box');
+            if (guess.value.length >= 3) return;
+            else {
+                if (guess.value.indexOf(obj.value) != -1) console.log('exist value');
+                else guess.value += obj.value;
+            }
+        }
+        let comm = Math.floor(Math.random)
+    </script>
+</head>
+
+<body>
+    <div>
+        <div>
+            <h1>Game</h1>
+            <input id="guess-box" placeholder="0">
+            <input type="button" onclick="" value="조회">
+            <hr>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="1">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="2">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="3">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="4">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="5">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="6">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="7">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="8">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onclick="click_num(this)" value="9">
+                        </td>
+                    </tr>
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: center;">
+                            <input type="button" onclick="document.getElementById('guess-box').value=''" class="clear"
+                                value="clear"></button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div>
+            <iframe></iframe>
+        </div>
+    </div>
+    <script>
+
+    </script>
+</body>
+
+</html>
