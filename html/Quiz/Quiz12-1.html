@@ -50,7 +50,21 @@
         }
     </style>
     <script>
-        function click_num(obj) {
+        let random_range = 9;
+        let nums = '123456789';
+        let comm = "";
+        let text = "";
+        while (comm.length < 3) {
+            let index = Math.floor(Math.random() * random_range)
+            console.log(index);
+            comm += nums[index]
+            if (nums.length == index + 1) nums = nums.slice(0, index)
+            else nums = nums.slice(0, index) + nums.slice(index + 1);
+            random_range--;
+        }
+        console.log(comm);
+
+        function down_num(obj) {
             obj.style.color = 'white';
             obj.style.backgroundColor = 'orchid';
             let guess = document.getElementById('guess-box');
@@ -60,7 +74,33 @@
                 else guess.value += obj.value;
             }
         }
-        let comm = Math.floor(Math.random)
+
+        function up_num(obj) {
+            obj.style.backgroundColor = 'white';
+            obj.style.border = '1px solid orchid';
+            obj.style.color = 'black';
+        }
+
+        function playGame() {
+            let user = document.getElementById('guess-box').value;
+            console.log(user);
+            let result = document.getElementById('result');
+            let strike = 0;
+            let ball = 0;
+            for (let i = 0; i < 3; i++) {
+                if (user[i] == comm[i]) {
+                    strike++;
+                } else {
+                    if (comm.indexOf(user[i]) != -1) ball++;
+                }
+            }
+            text += `> ${user} => ${strike}S ${ball}B<br>`;
+            user = 0;
+            if (strike == 3) {
+                text += '> *********승리!!*********';
+            }
+            result.innerHTML = text;
+        }
     </script>
 </head>
 
@@ -69,41 +109,50 @@
         <div>
             <h1>Game</h1>
             <input id="guess-box" placeholder="0">
-            <input type="button" onclick="" value="조회">
+            <button type="button" onclick="playGame()">조회</button>
             <hr>
             <table>
                 <tbody>
                     <tr>
                         <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="1">
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="1">
                         </td>
                         <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="2">
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="2">
                         </td>
                         <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="3">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="4">
-                        </td>
-                        <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="5">
-                        </td>
-                        <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="6">
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="3">
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="7">
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="4">
                         </td>
                         <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="8">
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="5">
                         </td>
                         <td>
-                            <input type="button" class="number" onclick="click_num(this)" value="9">
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="6">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="7">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="8">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="9">
                         </td>
                     </tr>
 
@@ -111,7 +160,8 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" style="text-align: center;">
-                            <input type="button" onclick="document.getElementById('guess-box').value=''" class="clear"
+                            <input type="button" onclick="document.getElementById('guess-box').value=''"
+                                onmousedown="down_num(this)" onmouseup="up_num(this)" class="clear"
                                 value="clear"></button>
                         </td>
                     </tr>
@@ -119,7 +169,7 @@
             </table>
         </div>
         <div>
-            <iframe></iframe>
+            <div id="result"></div>
         </div>
     </div>
     <script>
