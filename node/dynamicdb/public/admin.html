@@ -8,9 +8,34 @@
         User Authentication
     </title>
     <link href="dynamic.css" type="text/css" rel="stylesheet">
+    <script>
+        let id;
+        function getParameter(name) {
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+        function sessionStore() {
+            id = getParameter('id');
+            let now = new Date();
+            if (!window.sessionStorage) {
+                alert('세션 스토리지를 지원하지 않습니다.');
+                return;
+            }
+            sessionStorage.setItem(id, now);
+            alert(`사용자 ${id} 님이 로그인 하셨습니다.`);
+        }
+        function logOut() {
+            let check = confirm("로그아웃 하시겠습니까?")
+            if (check) {
+                sessionStorage.removeItem(id);
+                window.location = '/login-page';
+            }
+        }
+    </script>
 </head>
 
-<body class="user-body">
+<body class="user-body" onload="sessionStore()">
     <h3 class="head-text">User Authentication</h3>
     <hr>
     <form name="userForm" target="targetURL" action="/insert" method="post">
@@ -27,7 +52,7 @@
         &nbsp;&nbsp;
         <input type="submit" formaction="/delete" value="post delete">
         <p>
-            <a href="/login-page" class="base-a">LOGOUT</a>
+            <a href="javascript:logOut()" class="base-a">LOGOUT</a>
         </p>
     </form>
     <br>
