@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>
+        Prime number 워커 테스크
+    </title>
+    <script>
+        let addWorker = new Worker('prime.js');
+
+        function send() {
+            let num = parseInt(document.getElementById('num').value);
+            let parameter;
+            if (num <= 0) {
+                alert('0 이상의 숫자를 넣어주세요');
+                return;
+            }
+            else if (num >= 1) {
+                parameter = {
+                    input: num
+                }
+            }
+            else {
+                alert('숫자를 넣어주세요');
+                return;
+            }
+            addWorker.postMessage(parameter);
+        }
+        addWorker.onmessage = function (e) {
+            if (e.data.flag) {
+                document.getElementById('result').innerHTML = `${e.data.val} 는 소수입니다.`;
+            } else {
+                document.getElementById('result').innerHTML = `${e.data.val} 는 소수가 아닙니다.`;
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <h1 style="text-align: center;">워커 테스크로 소수판별하기</h1>
+    <h3>소수 판별</h3>
+    <hr>
+    <div>
+        <input type="text" id="num" placeholder="0">
+        <input type="button" onclick="send()" value="send">
+    </div>
+    <hr>
+    <span id="result">
+        아이야~
+    </span>
+</body>
+
+</html>
