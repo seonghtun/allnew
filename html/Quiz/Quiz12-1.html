@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>숫자 야구게임</title>
+    <style>
+        #guess-box {
+            text-align: right;
+        }
+
+        div {
+            text-align: center;
+        }
+
+        div>div {
+            display: inline-block;
+            margin-right: 50px
+        }
+
+        table {
+            margin: auto;
+        }
+
+        td {
+            width: 55px;
+            height: 55;
+        }
+
+        input[type=button] {
+            background-color: white;
+            border: 1px solid orchid;
+        }
+
+        .number {
+
+            width: 50px;
+            height: 50px;
+        }
+
+        iframe {
+            position: absolute;
+            top: 50px;
+            height: 300px;
+            border: 3px dotted orchid;
+        }
+
+        .clear {
+            width: 165px;
+        }
+    </style>
+    <script>
+        let random_range = 9;
+        let nums = '123456789';
+        let comm = "";
+        let text = "";
+        while (comm.length < 3) {
+            let index = Math.floor(Math.random() * random_range)
+            console.log(index);
+            comm += nums[index]
+            if (nums.length == index + 1) nums = nums.slice(0, index)
+            else nums = nums.slice(0, index) + nums.slice(index + 1);
+            random_range--;
+        }
+        console.log(comm);
+
+        function down_num(obj) {
+            obj.style.color = 'white';
+            obj.style.backgroundColor = 'orchid';
+            let guess = document.getElementById('guess-box');
+            if (guess.value.length >= 3) return;
+            else {
+                if (guess.value.indexOf(obj.value) != -1) console.log('exist value');
+                else guess.value += obj.value;
+            }
+        }
+
+        function up_num(obj) {
+            obj.style.backgroundColor = 'white';
+            obj.style.border = '1px solid orchid';
+            obj.style.color = 'black';
+        }
+
+        function playGame() {
+            let user = document.getElementById('guess-box').value;
+            console.log(user);
+            let result = document.getElementById('result');
+            let strike = 0;
+            let ball = 0;
+            for (let i = 0; i < 3; i++) {
+                if (user[i] == comm[i]) {
+                    strike++;
+                } else {
+                    if (comm.indexOf(user[i]) != -1) ball++;
+                }
+            }
+            text += `> ${user} => ${strike}S ${ball}B<br>`;
+            user = 0;
+            if (strike == 3) {
+                text += '> *********승리!!*********';
+            }
+            result.innerHTML = text;
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <div>
+            <h1>Game</h1>
+            <input id="guess-box" placeholder="0">
+            <button type="button" onclick="playGame()">조회</button>
+            <hr>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="1">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="2">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="3">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="4">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="5">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="6">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="7">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="8">
+                        </td>
+                        <td>
+                            <input type="button" class="number" onmousedown="down_num(this)" onmouseup="up_num(this)"
+                                value="9">
+                        </td>
+                    </tr>
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: center;">
+                            <input type="button" onclick="document.getElementById('guess-box').value=''"
+                                onmousedown="down_num(this)" onmouseup="up_num(this)" class="clear"
+                                value="clear"></button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div>
+            <div id="result"></div>
+        </div>
+    </div>
+    <script>
+
+    </script>
+</body>
+
+</html>

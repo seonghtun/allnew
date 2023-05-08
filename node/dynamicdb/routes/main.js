@@ -192,6 +192,7 @@ app.post('/login', (req, res) => {
         // res.redirect('/login-page');
     }
     else if (id === "") {
+        sss
         // res.send("ID를 입력해주세요.");
         res.write("<script>alert('User-id를 입력하세요.')</script>");
         // res.write("<script>alert('User-id를 입력하세요.')</script>");
@@ -209,9 +210,11 @@ app.post('/login', (req, res) => {
         else {
             console.log(result);
             if (id === 'root' || id === 'admin') {
-                res.redirect('admin.html');
+                console.log(id + " => Administrator Logined");
+                res.redirect('admin.html?id=' + id);
             } else {
-                res.redirect('user.html');
+                console.log(id + " => User Logined");
+                res.redirect('user.html?id=' + id);
             }
         }
     }
@@ -248,7 +251,6 @@ app.post('/register', (req, res) => {
                 <div>
                     <h3 style="margin-left:30px">Register Failed</h3>
                     <h4 style="margin-left:30px">이미 존재하는 아이디입니다</h4>
-                    
                     <a href="register.html" style="margin-left:30px">다시 시도하기</a>
                 </div>
             </body>
@@ -263,5 +265,7 @@ app.post('/register', (req, res) => {
         }
     }
 })
+
+
 
 module.exports = app;

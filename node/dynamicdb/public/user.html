@@ -8,15 +8,47 @@
     <title>
         User Page
     </title>
+    <script>
+        let id;
+        function getParameter(name) {
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results === null
+                ? ""
+                : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+        function sessionStore() {
+            id = getParameter("id");
+            let now = new Date();
+            if (!window.sessionStorage) {
+                alert("세션 스토리지를 지원하지 않습니다.");
+                return;
+            }
+            sessionStorage.setItem(id, now);
+            alert(`사용자 ${id} 님이 로그인 하셨습니다.`);
+        }
+        function logOut() {
+            // window.addEventListener("beforeunload", (event) => {
+            //     event.preventDefault();
+            //     event.returnValue = "";
+            // })
+            let check = confirm("로그아웃 하시겠습니까?")
+            if (check) {
+                sessionStorage.removeItem(id);
+                window.location = '/login-page';
+            }
+        }
+    </script>
+
 </head>
 
-<body>
+<body onload="sessionStore()">
     <h3>User Page</h3>
     <nav id="menu">
         <ul>
             <li><a href="user.html" target="targetURL">HOME</a></li>
             <li><a href="aboutme.html" target="targetURL">ABOUTME</a></li>
-            <li><a href="/login-page" class="Logout">Logout</a></li>
+            <li><a href="javascript:logOut()" class="Logout">LOGOUT</a></li>
         </ul>
     </nav>
     <iframe class="center" name="targetURL" src="main.html"></iframe>
