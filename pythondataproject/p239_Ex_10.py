@@ -26,7 +26,7 @@ print('-' * 40)
 
 total_frame = pd.concat([frame01,frame02,frame03], axis=1, ignore_index=True)
 total_frame.columns = ['f', '4', 'r']
-print(total_frame.head())
+print(total_frame)
 total_frame.plot(kind='box', title='고속도록 주행 마일수의 상자 수염')
 
 plt.xlabel('구동 방식')
