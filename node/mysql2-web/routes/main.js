@@ -14,6 +14,11 @@ app.get("/Hello", (req, res) => {
     res.send("Hello World")
 })
 
+app.post("/todos", (req, res) => {
+    console.log(req.body);
+    res.send("잘도착했어요~");
+})
+
 // Select all rows from st_info table
 app.get("/select", async (req, res) => {
     const [rows, fields] = await pool.query("SELECT * FROM st_info");
