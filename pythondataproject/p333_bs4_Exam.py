@@ -1,7 +1,7 @@
 import urllib.request
 from bs4 import BeautifulSoup
 from pandas import DataFrame
-
+import matplotlib.pyplot as plt
 url = 'https://movie.daum.net/ranking/reservation'
 html = urllib.request.urlopen(url)
 soup = BeautifulSoup(html , 'html.parser')
@@ -22,3 +22,8 @@ columns = ['순위','제목','평점','예매율','개봉일']
 
 df = DataFrame(data=datas, columns=columns)
 print(df)
+df['평점'] = df['평점'].astype(float)
+df['예매율'] = df['예매율'].str.strip('%').astype(float)
+
+plt.barh(x=df['제목'], y=df[['평점','예매율']])
+plt.show()
