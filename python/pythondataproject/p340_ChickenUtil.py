@@ -54,7 +54,7 @@ class ChickenStore():
     def save2Csv(self, result):
         data = pd.DataFrame(result, columns=self.mycolumns)
         data.to_csv(self.brandName + '.csv', \
-                    encoding=self.myencoding, index=True)
+                    encoding=self.myencoding, index=False)
 
     def __init__(self, brandName, url):
         self.brandName = brandName
