@@ -91,7 +91,8 @@ app.post('/dbTestInsert', function (req, res) {
             if (err){
                 console.error(err.message);
             }
-            res.send(result);
+            
+            res.send([result]);
         })
     }
 });
