@@ -6,9 +6,9 @@ import pandas as pd
 
 url_header = 'https://dapi.kakao.com/v2/local/search/address.json?query='
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("../")))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
 ##abspath가 절대경로
-secret_file = os.path.join(BASE_DIR, 'secret.json')
+secret_file = os.path.join(BASE_DIR, '../secret.json')
 
 with open(secret_file) as f:
     secrets= json.loads(f.read())
@@ -20,6 +20,7 @@ def get_secret(setting, secrets=secrets):
         errorMsg = "Set the {} environment variable.".format(setting)
         return print(errorMsg)
 
+# 'KakaoAK' + ' ' 이어야한다
 header = {'Authorization': 'KakaoAK ' + get_secret("kakao_apiKey")}
 
 def getGeocoder(address):
