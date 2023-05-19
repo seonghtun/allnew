@@ -43,7 +43,7 @@ mytarget = soup.find_all('div', attrs={'class' : 'w-full h-full relative'})
 print('만화 총 개수 : %d' % (len(mytarget)))
 
 for abcd in mytarget:
-    myhref = abcd.fing('a').attrs['href']
+    myhref = abcd.find('a').attrs['href']
     myhref = myhref.replace('./webtoon/','')
     result = myhref.split('&')
     mytitleid = result[0].split('=')[1]

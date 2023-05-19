@@ -32,7 +32,7 @@ def getHospitalData(pageNo, numofRows):
     
     parameters = ''
     parameters += '?resultType=json'
-    parameters += '&serviceKey='+get_secret('busan_h_apiKey')
+    parameters += '&serviceKey='+get_secret('data_apiKey')
     parameters += '&numOfRows=' + str(numofRows)
     parameters += '&pageNo=' + str(pageNo)
     url = endpoint + parameters

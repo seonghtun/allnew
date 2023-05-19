@@ -19,7 +19,7 @@ class Visualization(object):
 
         fontpath = 'malgun.ttf'
         wordcloud = WordCloud(font_path=fontpath, mask=alice_coloring,
-                              relative_scaling=0.2, background_color='lightyellow')
+                            relative_scaling=0.2, background_color='lightyellow')
         print(self.wordList)
 
         wordcloud = wordcloud.generate_from_frequencies(self.wordDict)
@@ -49,7 +49,7 @@ class Visualization(object):
             value = str(chartdata[idx]) + '건'
 
             plt.text(x=idx, y=chartdata[idx] - 5, s=value, fontsize=8,
-                     horizontalalignment='center')
+                    horizontalalignment='center')
 
         plt.xticks(range(barcount), xdata, rotation=45)
         plt.bar(range(barcount),chartdata, align='center',color=mycolor)
