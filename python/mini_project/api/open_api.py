@@ -6,11 +6,16 @@ from pymongo import mongo_client
 from bson.objectid import ObjectId
 import json
 import os.path
+from datetime import datetime, timedelta
 
 pd.set_option('display.max_columns',10)
 pd.set_option('display.max_rows',50)
 
+    
+
+
 # pydantic.json.ENCODERS_BY_TYPE[objectid] = str
+app = FastAPI()
 
 BASE_DIR = os.path.dirname(os.path.relpath("./"))
 secret_file = os.path.join(BASE_DIR, "../../secret.json")
@@ -36,13 +41,26 @@ mycol = mydb['netflix']
 
 print('Connected to Mongodb.....')
 
-def getAPI(url, country=None):
-    if country is None:
-        country = ''
-        # 없이 검색하는거 다들고오는거
-    else :
-        country = '?country='+country
-    response = requests.get(url + country)
+def getAPI(country=None, show_title=None, category=None, week=None, url = JSON_HOST):
+    url += '?'
+    if country is not None:
+        url += 'country='+country
+    if show_title is not None:
+        if url[-1] != "?":
+            url += '&show_title='+show_title
+        else :
+            url += 'show_title='+show_title
+    if category is not None:
+        if url[-1] != "?":
+            url += '&category='+category
+        else :
+            url += 'category='+category
+    if week is not None:
+        if url[-1] != "?":
+            url += '&week='+week
+        else :
+            url += 'week='+week
+    response = requests.get(url)
     print(type(response.text))
     _dict = json.loads(response.text)
     return _dict
@@ -64,10 +82,64 @@ def mongo_delete():
     else:
         return result
 
-datas = getAPI(JSON_HOST)
-df = pd.DataFrame(datas)
-print(df.loc[df['show_title']==('Squid Game'),['cumulative_weeks_in_top_10']])
-print(df.loc[(df['show_title']==('Squid Game')) & (df['country_name'] == 'United States'),['country_name','cumulative_weeks_in_top_10']].groupby(['country_name']).max().sort_values(by=['cumulative_weeks_in_top_10'], axis=0, ascending=False))
+@app.get('/')
+async def hello():
+    return 'Hello yoon'
+
+@app.get(path='/getdata')
+async def json_server_get(country = None, title = None, category = None, date=None):
+    print(country, title,category)
+    if (category == 0):
+        category = 'Films'
+    else:
+        category = 'TV'
+    result = getAPI(country=country, show_title=title, category=category, date=date)
+    return result
+
+
+# df['cumulative_weeks_in_top_10'] = df['cumulative_weeks_in_top_10'].astype('int')
+
+# print(df.info())
+
+# def title_top10_country(show_title):
+#     return df.loc[df['show_title']==(show_title),['country_name','show_title', 'cumulative_weeks_in_top_10' ]].\
+#     groupby(['country_name']).max().sort_values('cumulative_weeks_in_top_10',ascending=False).head(10)
+
+# # print(pd.to_datetime(df['week']).dt.month == 5)
+
+# def weeks_top10(df,show_titles, countries):
+#     pass
+#     # show country weeks
+#     list()
+#     []
+
+# print(df.loc[(df['show_title'] == 'Squid Game') & (df['country_name'] == 'Argentina')])
+
+# squid_game_countries = title_top10_country('Squid Game')
+# home_town_countries = title_top10_country('Hometown Cha-Cha-Cha')
+# the_glory_countries = title_top10_country('The Glory')
+# all_of_us_are_dead_countries = title_top10_country('All of Us Are Dead')
+
+# merge titles
+# print(squid_game_countries)
+# print(home_town_countries)
+# print(the_glory_countries)
+# print(all_of_us_are_dead_countries)
+
+# squid_home_merge = pd.merge(squid_game_countries, home_town_countries,suffixes=('_squid','_home_town') ,left_index=True, right_index=True,how='outer')
+# print(squid_home_merge)
+# glory_dead_merge = pd.merge(the_glory_countries, all_of_us_are_dead_countries,suffixes=('_glory','_dead') ,left_index=True, right_index=True,how='outer')
+# print(glory_dead_merge)
+
+# four_title_merge = squid_home_merge.join(glory_dead_merge, how='outer')
+# print(four_title_merge.shape)
+# print(four_title_merge.dropna(thresh=6, axis=0))
+# print(four_title_merge.dropna(thresh=4, axis=0))
+
+
+
+
+
 
 # print(mongo_delete())
 # print(list(mongo_insert(datas)))
