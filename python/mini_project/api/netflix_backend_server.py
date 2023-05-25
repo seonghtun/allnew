@@ -39,25 +39,16 @@ mycol = mydb['netflix']
 
 print('Connected to Mongodb.....')
 
-def getAPI(country=None, show_title=None, category=None, week=None, url = JSON_HOST):
+def getAPI(countries=None,title=None,url = JSON_HOST):
     url += '?'
-    if country is not None:
-        url += 'country='+country
-    if show_title is not None:
-        if url[-1] != "?":
-            url += '&show_title='+show_title
-        else :
-            url += 'show_title='+show_title
-    if category is not None:
-        if url[-1] != "?":
-            url += '&category='+category
-        else :
-            url += 'category='+category
-    if week is not None:
-        if url[-1] != "?":
-            url += '&week='+week
-        else :
-            url += 'week='+week
+    if countries != None:
+        
+        for i in range(len(countries)):
+            url += 'country=' + countries[i]+'&'
+        url = url[:-1]
+    if title==None:
+        return print("제목은 들어와야 됩니다.")
+    url += 'title='+title
     response = requests.get(url)
     print(type(response.text))
     _dict = json.loads(response.text)
@@ -84,14 +75,12 @@ def mongo_delete():
 async def hello():
     return 'Hello yoon'
 
-@app.get(path='/getdata')
-async def json_server_get(country = None, title = None, category = None, date=None):
-    print(country, title,category)
-    if (category == 0):
-        category = 'Films'
-    else:
-        category = 'TV'
-    result = getAPI(country=country, show_title=title, category=category, date=date)
+@app.get(path='/netflix_country')
+async def country(title = None):
+    print(countries, title)
+    result = getAPI(show_title=title)
+    if len(result) == 0:
+        return "데이터가 없습니다."
     return result
 
 
