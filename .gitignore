@@ -32,6 +32,7 @@ python/**/__pycache__/
 python/**/.idea
 python/secret.json
 python/**/.vevn
+python/**/*test*
 
 ## mongodb
 mongodb/**/*.json
