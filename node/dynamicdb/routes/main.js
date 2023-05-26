@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('sync-mysql');
 const env = require('dotenv').config({ path: "../../.env" });
+const request = require('request');
 
 var connection = new mysql({
     host: process.env.host,
@@ -75,6 +76,30 @@ app.get('/select', (req, res) => {
         template_result(result, res);
     }
 })
+
+app.post('/test', (req, res) => {
+    let result = req.body
+    console.log(result)
+    request({
+        uri: 'http://192.168.1.3:3000/contents_country_graph',
+        method: "POST",
+        body: {
+            countries: result['countries']
+        },
+        json: true,
+        function(error, response, body) {
+            console.error('error', error);
+            console.log('stausCode :', response && response.statusCode);
+            console.log('body :', body);
+        }
+    })
+})
+// 비동기함수로 만들어야 보내고 바로 끊긴다. 안하면 response 기다리고있는거다
+// 비동기 
+// sync 굳이 종료를 어플리케이션 이 종료되는 순간에 종료가 된다
+// async 어플리케이션 종료되는 순간이 아니게 할려는거니 연결 종료를 해줘야된다.
+// 기본적으로 함수 자체도 비동기 함수로 쓰게 
+// 서버 자체가 비동기 란 뜻이지 함수 자체가 비동기란 뜻은 아니다. 비동기로 쓴다는건 함수자체도 비동기로 하겠다는 뜻이다.
 
 app.get('/selectQuery', (req, res) => {
     // const { id , password } = req.query;

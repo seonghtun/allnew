@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<!-- 이 부분은 주석문 입니당.-->
+<!-- <!DOCTYPE html>
+ 이 부분은 주석문 입니당
 <html>
 
 <head>
@@ -15,6 +15,32 @@
     <div class="a-box">
         <a href="/login-page" class="login-a">Login</a>
     </div>
+</body>
+
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>check Box Test</title>
+</head>
+
+<body>
+    <form method="POST" action="/test">
+        <div>
+            <input type="checkbox" id="subscribeNews1" name="countries" value="0" />
+            <label for="subscribeNews1">뉴스레터를 구독하시겠습니까?</label>
+            <input type="checkbox" id="subscribeNews2" name="countries" value="1" />
+            <label for="subscribeNews2">뉴스레터를 구독 안할겁니까?</label>
+            <input type="checkbox" id="subscribeNews3" name="countries" value="2" />
+            <label for="subscribeNews3">뉴스레터를 구독 해야됩니다.</label>
+        </div>
+        <div>
+            <button type="submit">구독하기</button>
+        </div>
+    </form>
 </body>
 
 </html>
