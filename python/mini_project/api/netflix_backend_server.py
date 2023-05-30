@@ -7,11 +7,14 @@ from bson.objectid import ObjectId
 import json
 import os.path
 from datetime import datetime, timedelta
+from dateutil import relativedelta
 from pydantic import BaseModel
 import pydantic
-import bson
-from bson.objectid import ObjectId
+import gridfs
 import matplotlib.pyplot as plt
+import numpy as np
+
+# plt.rc('font', family='AppleGothic')
 
 BASE_DIR = os.path.dirname(os.path.relpath("./"))
 GRAPH_DIR = "../graph/"
@@ -22,19 +25,22 @@ pd.set_option('display.max_rows',50)
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
-class GraphElements(BaseModel):
+class TotalGraph(BaseModel):
     title:str 
     countries:list = []
 
-class Netflix(BaseModel):
-    title: str
-    period_start: str
-    period_end: str
-    
+class PeriodGraph(BaseModel):
+    title:str 
+    countries:list = []
+    period_start:str
+    period_end:str
+
+class Period(BaseModel):
+    title:str
+    period_start:str
+    period_end:str
 
 app = FastAPI()
-
-
 
 with open(secret_file) as f:
     secrets = json.loads(f.read())
@@ -57,11 +63,8 @@ client = mongo_client.MongoClient(f'{MONGO_HOST}')
 mydb = client['test']
 total_col = mydb['total_netflix']
 period_col = mydb['period_netflix']
-graph_col = mydb['graphs']
-
 
 print('Connected to Mongodb.....')
-
 
 def getAPI(countries=None,title=None,url = JSON_HOST, period=None):
     url += '?'
@@ -71,7 +74,17 @@ def getAPI(countries=None,title=None,url = JSON_HOST, period=None):
     if title==None:
         return print("제목은 들어와야 됩니다.")
     if period!=None:
-        url += f"week_gte={period[0]}&week_lte={period[1]}&"
+        if len(period[0])==4:
+            start = datetime.strptime(period[0],'%Y')
+            end = datetime.strptime(period[1],'%Y')
+        else:
+            start = datetime.strptime(period[0],'%Y-%m')
+            end = datetime.strptime(period[1],'%Y-%m')
+        
+        delta = relativedelta.relativedelta(end,start)
+        for i in range(12 * delta.years + delta.months):
+            date = start + relativedelta.relativedelta(months=i)
+            url += f"week_like={date.year}-{date.month}&"
     url += 'show_title='+title
     response =  requests.get(url)
     _dict = json.loads(response.text)
@@ -79,33 +92,21 @@ def getAPI(countries=None,title=None,url = JSON_HOST, period=None):
 
 def mongo_insert(netflix_list):
     mycol.insert_many(netflix_list)
-    result = mycol.find().limit(10)
+    
     
     if result:
         return result
     else:
         return "검색 결과가 없습니다."
 
-def mongo_delete():
-    mycol.delete_many({})
-    result = mycol.find()
-    if len(list(result)) == 0 :
-        return "empty collection"
-    else:
-        return result
 
-
-
-@app.get('/')
-async def hello():
-    return 'Hello yoon'
-
-@app.get(path='/netflix_total_country')
-async def country(title):
+@app.get(path='/netflix-total')
+async def total(title):
     result = getAPI(title=user_list[int(title)])
     if len(result) == 0:
-        return "데이터가 없습니다."
+        return {"ok": False, "data": []}
     total_col.insert_many(result)
+    print(list(total_col.find().limit(10)))
     # 정렬된 top10 누적주수 제일 많은 나라 순 정렬해서
 
     df = pd.DataFrame(result)
@@ -114,15 +115,15 @@ async def country(title):
     order_dict = df.loc[df.groupby('country_name')['cumulative_weeks_in_top_10'].idxmax()]\
                         .sort_values(['cumulative_weeks_in_top_10'],ascending=False)\
                         .to_dict(orient='records')
-    print(type(order_dict))
-    return order_dict
+    # print(type(order_dict))
+    return {"ok": True, "data": order_dict}
 
-@app.post(path='/netflix_period_country')
-async def netflix_period(request:Netflix):
-    print(request.period_start)
-    start = datetime.strptime(request.period_start,"%Y-%m").date()
-    end = datetime.strptime(request.period_end,"%Y-%m").date()
-    result = getAPI(title=user_list[int(request.title)], period=[start,end])
+@app.post(path='/netflix-month')
+async def month(req:Period):
+    result = getAPI(title=user_list[int(req.title)], period=[req.period_start,req.period_end])
+
+    period_col.insert_many(result)
+    print(list(period_col.find().limit(10)))
 
     # 정렬된 top10 누적주수 제일 많은 나라 순 정렬해서
     df = pd.DataFrame(result)
@@ -131,42 +132,125 @@ async def netflix_period(request:Netflix):
     order_dict = df.loc[df.groupby('country_name')['cumulative_weeks_in_top_10'].idxmax()]\
                         .sort_values(['cumulative_weeks_in_top_10'],ascending=False)\
                         .to_dict(orient='records')
-    return order_dict
+    return {"ok": True, "data": order_dict}
 
-@app.post(path='/total_graph')
-async def make_graph(req : GraphElements):
+@app.post(path='/netflix-year')
+async def year(req:Period):
+
+    result = getAPI(title=user_list[int(req.title)],period=[req.period_start,req.period_end])
+    if len(result) == 0:
+        return "데이터가 없습니다."
+    period_col.insert_many(result)
+    print(list(period_col.find().limit(10)))
+    # 정렬된 top10 누적주수 제일 많은 나라 순 정렬해서
+
+    df = pd.DataFrame(result)
+    df['cumulative_weeks_in_top_10'] = df['cumulative_weeks_in_top_10'].astype(int)
+
+    order_dict = df.loc[df.groupby('country_name')['cumulative_weeks_in_top_10'].idxmax()]\
+                        .sort_values(['cumulative_weeks_in_top_10'],ascending=False)\
+                        .to_dict(orient='records')
+    
+    return {"ok": True, "data": order_dict}
+
+@app.post(path='/total-graph')
+async def make_total_graph(req:TotalGraph):
+    print(req.title, req.countries)
+    data = total_col.find({"$and":[{'country_name':{'$in':req.countries}},{"show_title":user_list[int(req.title)]}]},{"_id":0})
+    
+    filename1 = f"{'_'.join(req.countries)}.jpg"
+    
+    countries_rank_graph(data,req.countries,GRAPH_DIR + filename1,user_list[int(req.title)])
+
+    data = total_col.find({'$and':[{'country_name':{'$in':req.countries}},{'weekly_rank':'1'},
+    {"show_title":user_list[int(req.title)]}]},{"_id":0})
+    filename2 = f"{'_'.join(req.countries)}_1st.png"
+    first_count_graph(data, GRAPH_DIR + filename2,user_list[int(req.title)]+ ' 1st')
+
+    return {"ok": True, "graph_urls":[filename1, filename2]}
+
+@app.post(path='/month-graph')
+async def make_month_graph(req:PeriodGraph):
     print(req.title, req.countries)
     graphs = []
-    data = total_col.find({'country_name':{'$in':req.countries}},{"_id":0})
-    filename = 'Graph01.png'
+    data = period_col.find({'$and':[{'country_name':{'$in':req.countries}},\
+                                    {'week' : {'$gte': req.period_start, '$lt':req.period_end}},
+                                    {'title': user_list[int(req.title)]}]},{"_id":0})
     
-    countries_rank_graph(data,req.countries,GRAPH_DIR + filename,user_list[int(req.title)])
-    with open(GRAPH_DIR + filename, 'rb') as f:
-        graphs.append({"filename":filename, "imagefile" : f.read()})    
+    filename1 = 'MonthGraph01.png'
     
-    data = total_col.find({'$and':[{'country_name':{'$in':req.countries}},{'weekly_rank':'1'}]},{"_id":0})
-    filename = "Graph02.png"
-    first_count_graph(data, GRAPH_DIR + filename,user_list[int(req.title)]+ ' 1st')
-    with open(GRAPH_DIR + filename, 'rb') as f:
-        graphs.append({"filename":filename, "imagefile" : f.read()})   
-    
-    graph_col.insert_Many(bson.BSON.encode(graphs))
-    return filename
+    countries_rank_period_graph(data,req.countries,GRAPH_DIR + filename1,user_list[int(req.title)],req.period_start,req.period_end)
 
-def countries_rank_graph(data, countries,filename,title):
+    data = period_col.find({'$and':[{'country_name':{'$in':req.countries}},{'weekly_rank':'1'},\
+                        {'week':{'$gte': req.period_start, '$lt':req.period_end}},
+                        {'title': user_list[int(req.title)]}]},{"_id":0})
+    filename2 = "MonthGraph02.png"
+    first_count_graph(data, GRAPH_DIR + filename2,user_list[int(req.title)]+ ' 1st')
+
+    return {"ok": True, "graph_urls":[filename1, filename2]}
+
+@app.post(path='/year-graph')
+async def make_year_graph(req:PeriodGraph):
+    print(req.title, req.countries)
+
+    data = period_col.find({'$and':[{'country_name':{'$in':req.countries}},\
+                                    {'week' : {'$gte': req.period_start, '$lt':req.period_end}}]},{"_id":0})
+    filename1 = 'YearGraph01.png'
+    countries_rank_period_graph(data,req.countries,GRAPH_DIR + filename1,user_list[int(req.title)],req.period_start,req.period_end)
+    
+    data = period_col.find({'$and':[{'country_name':{'$in':req.countries}},{'weekly_rank':'1'},\
+                        {'week':{'$gte': req.period_start, '$lt':req.period_end}}]},{"_id":0})
+    
+    filename2 = "YearGraph02.png"
+    first_count_graph(data, GRAPH_DIR + filename2,user_list[int(req.title)] + ' 1st')
+
+    
+    return {"ok": True, "graph_urls":[filename1, filename2]}
+
+
+@app.get(path='/col-drop')
+async def drop(collection):
+    if collection == 'total':
+        print(total_col.find_one())
+        total_col.delete_many({})
+        print(total_col.find_one())
+    else :
+        print(period_col.find_one())
+        period_col.delete_many({})
+        print(period_col.find_one())
+    return {"ok": True}
+
+def date_range(start, end):
+    if len(start) == 4:
+        start = datetime.strptime(start,'%Y')
+        # end = datetime.strptime(end,'%Y-%m') + relativedelta.relativedelta(months=1) - timedelta(days=1)
+        end = datetime.strptime(end,'%Y') - timedelta(days=1)
+    else :
+        start = datetime.strptime(start,'%Y-%m')
+        end = datetime.strptime(end,'%Y-%m') - timedelta(days=1)
+    dates = [(start + timedelta(days=i)).strftime("%Y-%m-%d") for i in range((end-start).days + 1) ]
+    return dates
+
+def countries_rank_period_graph(data, countries,filename,title,start,end):
     df = pd.DataFrame(data)
+    print(df.head())
+
     df['weekly_rank'] = df['weekly_rank'].astype(int)
-    
-    serieses = []
-    
+    dates = date_range(start,end)
+    print(dates[0],dates[-1])
+    serieses = [pd.Series(index=dates,data=np.zeros_like(dates))]
     for country in countries:
         data = df.loc[df['country_name'] == country, ['week','weekly_rank']].set_index(['week'])
         data.columns = [country]
         serieses.append(data)
-        # print(data.tail())
+        
+    graph_df = pd.concat(serieses,axis=1).sort_index().fillna(11)[countries]
+    graph_df.plot(figsize=(10,6),title=title, legend=True,marker="o" ,linestyle='None', rot=15)
     
-    graph_df = pd.concat(serieses,axis=1).sort_index().fillna(11)
-    graph_df.plot(kind='line', figsize=(10,6),title=title, legend=True,marker="." , rot=15)
+    for series in serieses[1:]:
+        for i in range(len(series)):
+            plt.text(dates.index(series.index[i]), series.values[i][0] -0.2, str(series.values[i][0]),
+            horizontalalignment='center')
     
     plt.xlabel('date')
     plt.ylabel('Ranking')
@@ -179,73 +263,52 @@ def countries_rank_graph(data, countries,filename,title):
     plt.cla()
     return filename
 
+def countries_rank_graph(data, countries,filename,title):
+    df = pd.DataFrame(data)
+    df['weekly_rank'] = df['weekly_rank'].astype(int)
+    
+    serieses = []
+
+    for country in countries:
+        data = df.loc[df['country_name'] == country, ['week','weekly_rank']].set_index(['week'])
+        data.columns = [country]
+        serieses.append(data)
+        # print(data.tail())
+
+    graph_df = pd.concat(serieses,axis=1).sort_index().fillna(11)
+    graph_df.plot(kind='line', figsize=(10,6),title=title, legend=True,marker="o" , rot=15)
+    for series in serieses:
+         for i in range(len(series)):
+            plt.text(list(graph_df.index).index(series.index[i]), series.values[i][0] - 0.3, str(series.values[i][0]),
+            horizontalalignment='center')
+
+    plt.xlabel('date')
+    plt.ylabel('Ranking')
+    plt.yticks(range(1,11,1))
+    plt.ylim(top=10)
+    plt.gca().invert_yaxis()
+
+    plt.savefig(filename,dpi=100, bbox_inches='tight')
+    print(filename + 'Saved...')
+    plt.cla()
+    return filename
+
 def first_count_graph(data,filename,title):
     df = pd.DataFrame(data)
     place = df.groupby('country_name')['weekly_rank'].count()
     # 색깔 적용하는 코드 만들어야됨
     colors = ['r','g','b']
 
-    place.plot(kind='bar', figsize=(10,6),title=title, rot=15, color=colors)
+    place.plot(kind='bar', figsize=(10,6),title=title, rot=15, color=colors[:len(df.index)])
     
     plt.xlabel('Country')
     plt.ylabel('Count')
     
-    plt.savefig(filename, dpi=400, bbox_inches='tight')
+    plt.savefig(filename, dpi=72, bbox_inches='tight')
     print(filename + 'Saved...')
     plt.cla()
-    return
+    return filename
+
+
+
 # return 안해주면 해줄때 까지 
-
-# df['cumulative_weeks_in_top_10'] = df['cumulative_weeks_in_top_10'].astype('int')
-
-# print(df.info())
-
-# def title_top10_country(show_title):
-#     return df.loc[df['show_title']==(show_title),['country_name','show_title', 'cumulative_weeks_in_top_10' ]].\
-#     groupby(['country_name']).max().sort_values('cumulative_weeks_in_top_10',ascending=False).head(10)
-
-# # print(pd.to_datetime(df['week']).dt.month == 5)
-
-# def weeks_top10(df,show_titles, countries):
-#     pass
-#     # show country weeks
-#     list()
-#     []
-
-# print(df.loc[(df['show_title'] == 'Squid Game') & (df['country_name'] == 'Argentina')])
-
-# squid_game_countries = title_top10_country('Squid Game')
-# home_town_countries = title_top10_country('Hometown Cha-Cha-Cha')
-# the_glory_countries = title_top10_country('The Glory')
-# all_of_us_are_dead_countries = title_top10_country('All of Us Are Dead')
-
-# merge titles
-# print(squid_game_countries)
-# print(home_town_countries)
-# print(the_glory_countries)
-# print(all_of_us_are_dead_countries)
-
-# squid_home_merge = pd.merge(squid_game_countries, home_town_countries,suffixes=('_squid','_home_town') ,left_index=True, right_index=True,how='outer')
-# print(squid_home_merge)
-# glory_dead_merge = pd.merge(the_glory_countries, all_of_us_are_dead_countries,suffixes=('_glory','_dead') ,left_index=True, right_index=True,how='outer')
-# print(glory_dead_merge)
-
-# four_title_merge = squid_home_merge.join(glory_dead_merge, how='outer')
-# print(four_title_merge.shape)
-# print(four_title_merge.dropna(thresh=6, axis=0))
-# print(four_title_merge.dropna(thresh=4, axis=0))
-
-
-
-
-
-
-# print(mongo_delete())
-# print(list(mongo_insert(datas)))
-
-# @app.get('/Mongoinsert')
-# def mongoinsert():
-#     result = MongoInsert(getAPI())
-#     return result
-
-# print(getAPI(url))
