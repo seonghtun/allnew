@@ -117,8 +117,10 @@ app.post('/month-graph', (req, res) => {
         .then(response => {
             // console.log(`statusCode : ${response.status}`)
             // console.log(response.data)
-            if (response.data.ok == false)
+            if (response.data.ok == false) {
+                console.log("여기인가?")
                 res.send({ "ok": false })
+            }
             else res.send(response.data.graph_urls)
         })
         .catch(error => {

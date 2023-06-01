@@ -1,6 +1,7 @@
 function showMsg() {
     var dialog = document.getElementById("myMsgDialog");
     dialog.showModal();
+
 }
 
 function closeMsg() {
@@ -12,22 +13,40 @@ function changeStandard(radio) {
     let selectDiv = document.getElementById("period-select")
     let rankImg = document.getElementById("rankImg")
     let oneImg = document.getElementById("oneImg")
+    const tableDiv = document.getElementById("tableDiv")
     const buttonDiv = document.getElementById('button')
     buttonDiv.innerHTML = ""
 
     if (radio.value == 'month') {
-        let imsihtml = '<select id="start">'
+        let imsihtml = '<select id="start" onchange="changeSelect(this)">'
         let d = new Date();
         imsihtml += makeDateSelect(d, false) + `
             </select>
-            <select id="end">`
+            <select id="end" onchange="changeSelect(this)">`
 
         imsihtml += makeDateSelect(d, true) + '</select>'
         selectDiv.innerHTML = imsihtml
+        tableDiv.innerHTML = ""
         rankImg.src = ""
         oneImg.src = ""
     } else {
         selectDiv.innerHTML = "<br>"
+    }
+}
+
+function changeSelect(select) {
+    const start = document.getElementById('start');
+    const end = document.getElementById('end');
+    // console.log(select.id)
+    // console.log(start.options[start.selectedIndex].text,
+    // end.options[end.selectedIndex].text);
+    if (start.options[start.selectedIndex].text > end.options[end.selectedIndex].text) {
+        alert("기간이 맞지 않습니다.");
+        if (select.id == 'start') {
+            start.selectedIndex = end.selectedIndex
+        } else {
+            end.selectedIndex = start.selectedIndex
+        }
     }
 }
 
@@ -45,40 +64,44 @@ function count_check(obj) {
 
 function makeDiaglog(countries, func) {
     let imsihtml = `
-            <button onclick='showMsg()'>국가 선택</button>
+            <button class="button" onclick='showMsg()'>국가 선택</button>
             <dialog id="myMsgDialog">
-                <div>
-                    <h3>국가 선택</h3>
-                    <button>
-                        <img src="" alt="창 닫기"
-                    </button>
-                </div>
-                <div>`
+                <table class="table">
+                    <thead>
+                        <tr><th colspan="6"><h3>국가 선택</h3></th></tr>
+                    <thead>
+                    <tbody><tr>
+                `
 
     for (let i = 0; i < countries.length; i++) {
+
         if (i < 3) {
             imsihtml += `
-            <input type="checkbox" name="countryItem" onclick="count_check(this)" value="${countries[i]}" checked>
+            <td><input type="checkbox" name="countryItem" onclick="count_check(this)" value="${countries[i]}" checked>
             <label for="${countries[i]}">&nbsp;${countries[i]}</label>
-            `
+            </td>`
         } else {
             if (i % 6 == 0) {
-                imsihtml += '<br>'
+                imsihtml += '</tr><tr>'
             }
             imsihtml += `
-            <input type="checkbox" name="countryItem" onclick="count_check(this)" value="${countries[i]}">
+            <td><input type="checkbox" name="countryItem" onclick="count_check(this)" value="${countries[i]}">
             <label for="${countries[i]}">&nbsp;${countries[i]}</label>
-            `
+            </td>`
         }
+
 
     }
     imsihtml +=
-        `
-        </div>
-        <div>
-            <input type="button" id="submit" onclick="postGraph()" value="확 인">
-            <input type="button" onclick="closeMsg()" value="취 소">
-        </div>
+        `</tr></tbody>
+        <tfoot>
+            <tr>
+                <td>
+                    <input type="button" id="submit" onclick="postGraph()" value="확 인">
+                    <input type="button" onclick="closeMsg()" value="취 소">
+                </td>
+            </tr>
+        <tfoot>
     </dialog>
     `
     return imsihtml
@@ -96,7 +119,7 @@ function find() {
     console.log(radio.value)
     var method = "";
     var url = "";
-    let imgUrl = "http://192.168.1.15:4556/"
+    let imgUrl = "./result/"
 
 
     console.log(inputVal)
@@ -107,6 +130,8 @@ function find() {
         const startDate = start.options[start.selectedIndex].value;
         const end = document.getElementById("end");
         const endDate = end.options[end.selectedIndex].value;
+        const rankImg = document.getElementById("rankImg")
+        const oneImg = document.getElementById("oneImg")
         console.log(`title=${inputVal}&start=${startDate}&end=${endDate}`)
 
         xhr.open(method, url);
@@ -145,8 +170,6 @@ function find() {
                 buttonDiv.innerHTML = makeDiaglog(data.country_name, "postGraph")
                 errorPTag.innerHTML = ""
                 tableDiv.innerHTML = imsihtml
-                let rankImg = document.getElementById("rankImg")
-                let oneImg = document.getElementById("oneImg")
                 rankImg.src = imgUrl.concat(graph_urls[0])
                 oneImg.src = imgUrl.concat(graph_urls[1])
             }
@@ -161,7 +184,7 @@ function postGraph() {
     const radio = document.querySelector('input[type=radio][name=standard]:checked');
     const method = "POST";
     let url = "/total-graph";
-    const imgUrl = "http://192.168.1.15:4556/"
+    const imgUrl = "./result/"
     const rankImg = document.getElementById("rankImg")
     const oneImg = document.getElementById("oneImg")
     const errorPTag = document.getElementById("error")
@@ -210,47 +233,9 @@ function postGraph() {
     };
 }
 
-// function getHello() {
-//     const xhr = new XMLHttpRequest();
-//     const method = "GET";
-//     const imgUrl = "http://192.168.1.15:4556/"
-
-//     var url = "/netflix-total";
-//     var countries = new Array();
-
-//     const element = document.getElementById("title");
-//     const inputVal = element.options[element.selectedIndex].value;
-//     // print(inputVal)
-//     console.log(inputVal)
-
-//     url += "?title=" + inputVal
-//     xhr.open(method, url);
-//     xhr.send();
-
-//     xhr.onreadystatechange = function () {
-//         if (xhr.readyState !== 4) return;
-
-//         if (xhr.status === 200) {
-//             // console.log(xhr.responseText);
-//             let { data, graph_urls } = JSON.parse(xhr.responseText)
-//             console.log(data, graph_urls)
-//             const buttonDiv = document.getElementById('button')
-//             const imsihtml = makeDiaglog(data.country_name, postGraph)
-//             buttonDiv.innerHTML = imsihtml
-//             let rankImg = document.getElementById("rankImg")
-//             let oneImg = document.getElementById("oneImg")
-//             rankImg.src = imgUrl.concat(graph_urls[0])
-//             oneImg.src = imgUrl.concat(graph_urls[1])
-//         } else {
-//             console.log("HTTP error", xhr.status, xhr.statusText);
-//         }
-//     };
-// }
-
 function makeDateSelect(now, end) {
     let year = now.getFullYear();
-    let month = now.getMonth();
-
+    let month = now.getMonth() + 1;
     imsihtml = ''
     while (year >= 2021) {
         if (year == 2021 && month < 6) break

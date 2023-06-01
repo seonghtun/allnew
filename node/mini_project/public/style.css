@@ -1,16 +1,220 @@
 :root {
-    --text-color: #f0f4f5;
-    --background-color: #263343;
+    --background-color: black;
     --accent-color: #d49466;
 }
 
 body {
-    margin: 0px;
-    font-family: 'Open sans';
+    font-family: 'Bebas Neue', sans-serif;
+    background: black;
+    color: white;
 }
 
 a {
     text-decoration: none;
+    color: red;
+}
+
+/* hr {} */
+
+.button {
+    background-color: black;
+    border: none;
+    color: red;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    font-weight: 800;
+    border-radius: 4px;
+    box-shadow: 2px 2px 1px 1px
+}
+
+label {
+    font-size: 20px;
+    font-weight: 800;
+    color: white
+}
+
+[type="radio"] {
+    vertical-align: middle;
+    appearance: none;
+    border: max(2px, 0.1em) solid gray;
+    border-radius: 50%;
+    width: 1.25em;
+    height: 1.25em;
+    transition: border 0.2s ease-in-out;
+}
+
+[type="radio"]:checked {
+    border: 0.3em solid rgb(255, 0, 0);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+#tableDiv {
+    height: 500px;
+    overflow: auto;
+    margin-bottom: 50px;
+    margin-top: 30px;
+}
+
+#tableDiv::-webkit-scrollbar {
+    width: 5px;
+    /*스크롤바의 너비*/
+}
+
+#tableDiv::-webkit-scrollbar-thumb {
+    background-color: red;
+    /*스크롤바의 색상*/
+}
+
+#tableDiv::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.5);
+    /*스크롤바 트랙 색상*/
+}
+
+#myMsgDialog {
+    padding: 0;
+}
+
+#myMsgDialog::-webkit-scrollbar {
+    width: 5px;
+    /*스크롤바의 너비*/
+}
+
+#myMsgDialog::-webkit-scrollbar-thumb {
+    background-color: black;
+    /*스크롤바의 색상*/
+}
+
+#myMsgDialog::-webkit-scrollbar-track {
+    background-color: rgba(255, 0, 0, 0.7);
+    /*스크롤바 트랙 색상*/
+}
+
+.table {
+    width: 100%;
+    background-color: black;
+    padding: 0px;
+    margin: 0px;
+}
+
+.table thead {
+    font-size: 20px;
+    color: white;
+    background-color: black;
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    text-align: left;
+    border: 0;
+}
+
+
+
+td input[type="button"] {
+    background-color: black;
+    border: none;
+    color: red;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    font-weight: 800;
+    border-radius: 4px;
+    box-shadow: 1px 1px 1px 1px
+}
+
+td input[type="button"]:hover {
+    background-color: red;
+    color: white;
+}
+
+table {
+    width: 80%;
+    border-top: 1px solid #444444;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+thead {
+    background-color: rgba(62, 58, 58, 0.4);
+    font-size: 20px;
+
+}
+
+th,
+td {
+    border-bottom: 1px solid #444444;
+    padding: 10px;
+    text-align: center;
+}
+
+.graphs {
+    float: left;
+    width: 45%;
+    padding: 30px;
+    margin: 40px;
+}
+
+.grid-image::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+select {
+    font-size: 20px;
+    height: 40px;
+    border-radius: 3px;
+    color: white;
+    background-color: black;
+    border: 0 none;
+    border-bottom: 2px solid red;
+    font-weight: 800;
+}
+
+select:hover {
+    border-bottom: 2px solid white;
+}
+
+select option {
+    font-weight: 800;
+}
+
+option:checked,
+option:hover {
+    background-color: gray;
+}
+
+.netflexTitle {
+    font-size: 4em;
+    padding-right: 30px;
+    color: red;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button:hover {
+    background-color: red;
     color: white;
 }
 
@@ -18,13 +222,13 @@ a {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #263343;
     padding: 8px 12px;
 }
 
 .navbar__logo {
-    font-size: 24px;
+    font-size: 100px;
     color: white;
+    margin: 10px 0px;
 }
 
 .navbar__logo i {
@@ -42,9 +246,18 @@ a {
 
 }
 
+.navbar__menu li a {
+    font-size: 30px;
+}
+
 .navbar__menu :hover {
     background: #d49466;
     border-radius: 4px;
+    border: solid red;
+}
+
+.navbar__menu li :hover {
+    border: None;
 }
 
 .navbar__icons {
@@ -99,4 +312,16 @@ a {
     .navbar__icons.active {
         display: flex;
     }
+}
+
+
+.center_nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 600px;
+}
+
+.li {
+    margin: 0px 5px;
 }
