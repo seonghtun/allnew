@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 import time
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from pymongo import mongo_client
 from bson.objectid import ObjectId
 import json
@@ -13,6 +13,15 @@ import pydantic
 import gridfs
 import matplotlib.pyplot as plt
 import numpy as np
+from sqlalchemy import create_engine, text
+from PIL import Image
+import base64
+from io import BytesIO
+from typing import List
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+
+
 
 # plt.rc('font', family='AppleGothic')
 
@@ -55,6 +64,12 @@ def get_secret(setting, secrets=secrets):
 
 MONGO_HOST = get_secret('Mongo_Host')
 JSON_HOST = get_secret('Netflix_JSON_Host')
+HOSTNAME = get_secret("Mysql_Hostname")
+PORT = get_secret("Mysql_Port")
+USERNAME = get_secret("Mysql_Username")
+PASSWORD = get_secret("Mysql_Password")
+DBNAME = get_secret("Mysql_DBname")
+
 
 user_list=["Squid Game", "All of Us Are Dead","Hometown Cha-Cha-Cha", "The Glory"]
 
@@ -87,6 +102,9 @@ def getAPI(countries=None,title=None,url = JSON_HOST, period=None):
             url += f"week_like={date.year}-{date.month}&"
     url += 'show_title='+title
     response =  requests.get(url)
+    if response.text == '[]':
+        print("비어있어")
+        return False
     _dict = json.loads(response.text)
     return _dict
 
@@ -103,27 +121,30 @@ def mongo_insert(netflix_list):
 @app.get(path='/netflix-total')
 async def total(title):
     result = getAPI(title=user_list[int(title)])
-    if len(result) == 0:
+    if not result:
         return {"ok": False, "data": []}
+
     total_col.insert_many(result)
     print(list(total_col.find().limit(10)))
     # 정렬된 top10 누적주수 제일 많은 나라 순 정렬해서
 
     df = pd.DataFrame(result)
+    df = df.drop(columns="_id")
     df['cumulative_weeks_in_top_10'] = df['cumulative_weeks_in_top_10'].astype(int)
 
     order_dict = df.loc[df.groupby('country_name')['cumulative_weeks_in_top_10'].idxmax()]\
                         .sort_values(['cumulative_weeks_in_top_10'],ascending=False)\
-                        .to_dict(orient='records')
-    # print(type(order_dict))
+                        .to_dict(orient='list')
+
     return {"ok": True, "data": order_dict}
 
 @app.post(path='/netflix-month')
 async def month(req:Period):
     result = getAPI(title=user_list[int(req.title)], period=[req.period_start,req.period_end])
-
+    if not result:
+        return {"ok": False, "data": []}
     period_col.insert_many(result)
-    print(list(period_col.find().limit(10)))
+    print(list(period_col.find({},{"_id":0}).limit(10)))
 
     # 정렬된 top10 누적주수 제일 많은 나라 순 정렬해서
     df = pd.DataFrame(result)
@@ -131,15 +152,15 @@ async def month(req:Period):
 
     order_dict = df.loc[df.groupby('country_name')['cumulative_weeks_in_top_10'].idxmax()]\
                         .sort_values(['cumulative_weeks_in_top_10'],ascending=False)\
-                        .to_dict(orient='records')
+                        .to_dict(orient='list')
     return {"ok": True, "data": order_dict}
 
 @app.post(path='/netflix-year')
 async def year(req:Period):
 
     result = getAPI(title=user_list[int(req.title)],period=[req.period_start,req.period_end])
-    if len(result) == 0:
-        return "데이터가 없습니다."
+    if not result:
+        return {"ok": False, "data": []}
     period_col.insert_many(result)
     print(list(period_col.find().limit(10)))
     # 정렬된 top10 누적주수 제일 많은 나라 순 정렬해서
@@ -149,7 +170,7 @@ async def year(req:Period):
 
     order_dict = df.loc[df.groupby('country_name')['cumulative_weeks_in_top_10'].idxmax()]\
                         .sort_values(['cumulative_weeks_in_top_10'],ascending=False)\
-                        .to_dict(orient='records')
+                        .to_dict(orient='list')
     
     return {"ok": True, "data": order_dict}
 
@@ -157,8 +178,8 @@ async def year(req:Period):
 async def make_total_graph(req:TotalGraph):
     print(req.title, req.countries)
     data = total_col.find({"$and":[{'country_name':{'$in':req.countries}},{"show_title":user_list[int(req.title)]}]},{"_id":0})
-    
-    filename1 = f"{'_'.join(req.countries)}.jpg"
+    print("여기 에서 어떻게나오지", data)
+    filename1 = f"{'_'.join(req.countries)}.png"
     
     countries_rank_graph(data,req.countries,GRAPH_DIR + filename1,user_list[int(req.title)])
 
@@ -172,11 +193,12 @@ async def make_total_graph(req:TotalGraph):
 @app.post(path='/month-graph')
 async def make_month_graph(req:PeriodGraph):
     print(req.title, req.countries)
-    graphs = []
-    data = period_col.find({'$and':[{'country_name':{'$in':req.countries}},\
-                                    {'week' : {'$gte': req.period_start, '$lt':req.period_end}},
-                                    {'title': user_list[int(req.title)]}]},{"_id":0})
     
+    data = period_col.find({'$and':[{'country_name':{'$in':req.countries}},\
+                                    {'title': user_list[int(req.title)]}]},{"_id":0})
+
+    if len(list(data)) == 0:
+        return {"ok": False, "graph_urls":[]}
     filename1 = 'MonthGraph01.png'
     
     countries_rank_period_graph(data,req.countries,GRAPH_DIR + filename1,user_list[int(req.title)],req.period_start,req.period_end)
@@ -193,8 +215,9 @@ async def make_month_graph(req:PeriodGraph):
 async def make_year_graph(req:PeriodGraph):
     print(req.title, req.countries)
 
-    data = period_col.find({'$and':[{'country_name':{'$in':req.countries}},\
-                                    {'week' : {'$gte': req.period_start, '$lt':req.period_end}}]},{"_id":0})
+    data = period_col.find({'country_name':{'$in':req.countries}},{"_id":0})
+    if len(list(data)) == 0:
+        return {"ok": False, "graph_urls":[]}
     filename1 = 'YearGraph01.png'
     countries_rank_period_graph(data,req.countries,GRAPH_DIR + filename1,user_list[int(req.title)],req.period_start,req.period_end)
     
@@ -249,8 +272,8 @@ def countries_rank_period_graph(data, countries,filename,title,start,end):
     
     for series in serieses[1:]:
         for i in range(len(series)):
-            plt.text(dates.index(series.index[i]), series.values[i][0] -0.2, str(series.values[i][0]),
-            horizontalalignment='center')
+            plt.text(dates.index(series.index[i]), series.values[i][0] -0.1, str(series.values[i][0]),
+            horizontalalignment='center', color='red')
     
     plt.xlabel('date')
     plt.ylabel('Ranking')
@@ -266,7 +289,7 @@ def countries_rank_period_graph(data, countries,filename,title,start,end):
 def countries_rank_graph(data, countries,filename,title):
     df = pd.DataFrame(data)
     df['weekly_rank'] = df['weekly_rank'].astype(int)
-    
+    # print(df)
     serieses = []
 
     for country in countries:
@@ -276,11 +299,11 @@ def countries_rank_graph(data, countries,filename,title):
         # print(data.tail())
 
     graph_df = pd.concat(serieses,axis=1).sort_index().fillna(11)
-    graph_df.plot(kind='line', figsize=(10,6),title=title, legend=True,marker="o" , rot=15)
+    graph_df.plot(kind='line', figsize=(10,6),title=title, legend=True,marker="." , rot=15)
     for series in serieses:
          for i in range(len(series)):
-            plt.text(list(graph_df.index).index(series.index[i]), series.values[i][0] - 0.3, str(series.values[i][0]),
-            horizontalalignment='center')
+            plt.text(list(graph_df.index).index(series.index[i]), series.values[i][0] - 0.2, str(series.values[i][0]),
+            horizontalalignment='center', color='red')
 
     plt.xlabel('date')
     plt.ylabel('Ranking')
@@ -289,7 +312,7 @@ def countries_rank_graph(data, countries,filename,title):
     plt.gca().invert_yaxis()
 
     plt.savefig(filename,dpi=100, bbox_inches='tight')
-    print(filename + 'Saved...')
+    print(filename + ' Saved...')
     plt.cla()
     return filename
 
@@ -304,8 +327,8 @@ def first_count_graph(data,filename,title):
     plt.xlabel('Country')
     plt.ylabel('Count')
     
-    plt.savefig(filename, dpi=72, bbox_inches='tight')
-    print(filename + 'Saved...')
+    plt.savefig(filename, dpi=100, bbox_inches='tight')
+    print(filename + ' Saved...')
     plt.cla()
     return filename
 
