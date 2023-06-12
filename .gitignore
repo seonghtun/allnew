@@ -72,3 +72,6 @@ html/**/package-lock.json
 node/**/node_modules
 node/**/package-lock.json
 node/config/pool.js
+
+## cloud9
+.c9
