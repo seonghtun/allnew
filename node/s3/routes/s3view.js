@@ -134,7 +134,7 @@ app.post('/downloadFile',function(req,res){
     
         s3.getObject(params, function(err, data) {
             if(err) { return console.log(err);}
-            res.attachment(filename);
+            res.attachment(filename); // 이부분이 파일 다운
             res.send(data.Body);
             res.end();
         })
