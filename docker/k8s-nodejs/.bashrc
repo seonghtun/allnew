@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # ~/.bashrc: executed by bash(1) for non-login shells.
 
 # Note: PS1 and umask are already set in /etc/profile. You should not
@@ -18,7 +16,6 @@
 # alias rm='rm -i'
 # alias cp='cp -i'
 # alias mv='mv -i'
->>>>>>> 09bf0f88c66266c141ffbbc20a12f146f09927bb
 alias c='clear'
 alias h='history'
 alias df='df -h'

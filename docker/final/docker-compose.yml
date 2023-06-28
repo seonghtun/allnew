@@ -1,5 +1,9 @@
 # Service Definition
+<<<<<<< HEAD
 version : "3.3" # compose version
+=======
+version : "3.3"
+>>>>>>> 09bf0f88c66266c141ffbbc20a12f146f09927bb
 services:
   node:
     restart: always
