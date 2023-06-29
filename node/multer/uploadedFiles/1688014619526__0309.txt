@@ -1,0 +1,198 @@
+boot block : 부팅하는건 하나 master boot record mbr 레코드 안되게한거라 그냥 깔아주면된다
+명령어 상에서 그대로 붙여서 부팅가능
+
+df -T 로 파일시스템 볼수있구나
+
+작업 하나로 할때는 여러개면 일치성이 떨어질수있으니 본인 git 으로 기준을 삼는다.
+
+정말 열악할 환경이 많다 . GUI
+
+apt -get을 쓸수없다. 네트워크 연결안되서
+스토리지 를 저장해서 가져가면 usb 도안된다
+cd룸 으로 하면 복사가안된다. 
+
+[:문단 건너뛰어서 다음 문단 처음으로간다 ] 끝으로
+다음 화면 ^f 이전화면 ^b
+
+명령어 실행 사이클
+f -> d -> e-> s
+      f -> d -> e-> s
+	f -> d -> e-> s
+	      f -> d -> e-> s
+
+fetch 는 어셈블러 명령어 하나 불러와지는걸 말한다.
+IR instructure register명령어 담는 레지스터 가있다 명령어의 주소 를 가져와야해 pc에 있는걸 
+현재 실행 중인 명령어에 주소를 담고있는 register program counter 이다 . 
+
+decode 앞에 8비트 까보면 add라는 명령어다 라는 이해하는 단계가된다. 
+나머지 이용해서 연산하는 단계가 execute 
+store는 저장 누산기 여러 코어가 있고 여러 멀티쓰레드가 있으니까 
+여러개로 사선이 지는걸 파이프라인이라고 한다 .
+반복문 인것 fetch 에서는몰라 decode e에서 실행되서 나머지 올려둔걸 버리게된다. 2클럭낭비가 된다는뜻이구나.
+
+주소지정방법 이 여러개다.
+직접, 간접 , 
+16비트 사이만 담을수있는데 더 먼곳에 주소는 다른곳 진짜를 저장해두고 거쳐서 간다.
+whoami
+who 
+who am i 다른것
+pts psudo?psedo 가짜 터미널시스템
+
+초기 화면으로 바꾸고싶다 :e!
+u undo\
+
+vi 환경설정
+변수는 :set 치면 볼수잇다 vi 안에서말이다.
+
+토큰 쓰는게 좋다 .
+
+git init 기존 깃 저장소를 다시 초기화 한다.
+
+읽기 권한이 없으면 접근자체를 할수없다
+root는 권한이 있든없든 다들어갈수있다.
+
+x = executable 권한
+chmod ug+x,go-r myenv
+chmod ug=rw myconfig 나머지 다 권한 지우고 ug에만 rw 만 부여
+
+기본 접근 권한
+
+접근권한은 umask로 인해 설정된다
+0022  022 만본다 
+
+마스크라는건
+777
+022 
+---
+755 -> directory 7의보수
+111
+=====
+644 => file
+
+파일에 기본적인 실행권한을 안주기때문이다.
+umask 077
+
+특수 접근권한 중요쓰 시험잘나옴(리눅스 마스터 기준)
+
+
+[root@ubuntu-virtualbox /work/allnew]# ll /usr/bin/passwd
+-rwsr-xr-x 1 root root 59976 11월 24 21:05 /usr/bin/passwd*
+[root@ubuntu-virtualbox /work/allnew]# ll /usr/bin/write.ul
+-rwxr-sr-x 1 root tty 22912  2월 21  2022 /usr/bin/write.ul*
+[root@ubuntu-virtualbox /work/allnew]# ls -ld /tmp/ -d 가 directory 자체를 보여줌 
+drwxrwxrwt 18 root root 4096  3월  9 09:17 /tmp//
+
+find로 현재상태를 볼수있구만 흠흠
+-perm [ex)4755] permission 옵션 뒤에
+
+백도어?
+-exec 뒤에 {}를 쓰면 앞에서 찾은내용을 담는것이된다 \; 로 끝낸다
+-ok 는물어본다 - exec 는 안물어본다
+
+
+hostname = /etc/hostname 파일안에있다.
+
+window dos command com ? 이라는게 명령어 해석
+
+rc 붙은건 설정파일일수도 
+
+현재 시스템에서 제공하는 shell은 /etc/shells 에서 볼수있다.
+tc shell 이 같이 깔린다.
+
+SVR4 system five release version 4 
+
+POSIX 시스템 표준 을 정해주는 단체?
+ISO 단체 인터네셔날한 스탠다드 어간제이션? 산업표준같은걸 만든다. 전기 전자쪽과는 관련없다. 
+IEEE 가 전지 전자쪽은 여기이다. WIFI
+IETF 인터넷과 관련된 internet engineering task f? TCP, UDP , IP
+
+POSIX 
+
+ANSI 표준 => c 언
+
+W3C 표준 => HTML5 여기서 만듬 
+
+### /etc/passwd file의 구조 
+username:pw:uid:gid:comment(주석):home-directory:shell
+없어요:p:u:g:c:d:s 이게 옵션
+-k : /etc/skel 이외의 곳에서 환경설정 파일 복사
+-m : make
+
+다른 유저 홈 디렉토리는 못들어감
+확인은 user는 /etc/passwd
+group /etc/group
+에서 마지막부분에 없어졌는지 확인 저기에 들어가고 저걸로만 확인하는거구나
+chsh -s /bin/sh change shell 인가? -s shell 명시면 아닌가?
+
+root 사용자가 남에꺼 바꿔줄때 뒤에 명시 chsh -s /bin/bash ubuntu
+유저는 자기꺼 만바꿔지니 안적어도 자기꺼 바뀜
+
+로그인셸 로그인하면 바로 부여되는 쉘
+ps -f
+처음 있는줄 쉘은 로그인쉘이 된다?
+
+echo 는 반향 을해준당 기본적인 특징이 newline을 가지고있다. 강제적으로 안생기게 echo -n hello
+
+printf newline 없음
+
+\f 폼피드 form feed 다음페이지 시작부분으로 넘김
+
+echo single quoter 는 안에 문자 해석안함 escape sequnce 붙이는것도 방법 \$SHELL
+
+double quote 사용시  shell 에서말이다.
+[root@ubuntu /work]# echo "'tody is' `date`"
+'tody is' 2023. 03. 09. (목) 16:00:26 KST
+[root@ubuntu /work]# echo '"tody is" `date`'
+"tody is" `date`
+
+바꿀수도있다.
+overwrite 안되도록 막을수도 있다.
+
+set -o noclobber 보호가 될수도있다.
+set +o noclobber 되돌리기
+-------------------------------------------------
+1 은 출력
+2 는 error 인데 2는 생략못함 그래서 써줘야된다.
+------------------------------------------------
+ls abc 2> /dev/null 블랙홀 같은것 error 파일에 ㅇ
+cat /dev/null > error 초기화?
+-------------------------------------------
+find / -name "*.c" > result 2> error
+두개의 경우 다 감당하게 할수있네
+
+[root@ubuntu /work]# ls . abc > ls.out 2> ls.err
+[root@ubuntu /work]# cat ls.out
+.:
+./  ../  allnew/  error  ls.err  ls.out  passwd  result  temp/  test1
+[root@ubuntu /work]# cat ls.err
+ls: 'abc'에 접근할 수 없음: 그런 파일이나 디렉터리가 없습니다
+--------------------------------------------------------------------
+[root@ubuntu /work]# ls . abc > ls.out 2>&1
+[root@ubuntu /work]# cat ls.out
+ls: 'abc'에 접근할 수 없음: 그런 파일이나 디렉터리가 없습니다
+.:
+./  ../  allnew/  error  ls.err  ls.out  passwd  result  temp/  test1
+
+shell 변수 vs 환경 변수 
+현재쉘 <> 로그인쉘 & 서브쉘 에서 사용
+set  으로 목록봄<> env 로 봄
+
+export $변수명=value
+쉘 변수와 환경변수 둘다에 들어가네
+
+unset $변수명 은 쉘변수 
+
+!! 이전 명령어 다시 쳐지는거
+
+[root@ubuntu /work]# export PS1='\d\T\W\$ '
+목  3월 0905:16:25work# export PS1='\d \T \W \$ '
+목  3월 09 05:16:40 work # cd /var/log
+목  3월 09 05:17:09 log # export PS1='\d \T \w \$ '
+목  3월 09 05:17:20 /var/log #
+\h 호스트
+\u username
+
+/etc/profile.d/ global 환경변수 파일 
+로그인하면서 파일실행은 못하지만 로그아웃하면서 실행하는 파일 지정할수는있다.
+
+가상시스템 내보내기? 전체를 내보내기를 하는것이다. 파일 등등 설정등등 다.

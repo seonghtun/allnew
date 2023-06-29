@@ -1,0 +1,38 @@
+계속해서 사용하고 싶다. 
+
+반드시 마운트 포인트는 절대경로여야된다
+
+umount /disk2_2
+mount /disk2_2 mount가 될려면 /etc/fstab 에 경로가 입력되어있으면 mount로 추가시킬수있다. 없으면 못해준다. 경로가 제대로안된것은 찾을수가없다 컴퓨터가 제대로 인식을못하니까
+
+umount 는 mount point 나 장치 파일 경로 둘중에 하나 넣어주면 mount 됨
+fdisk 도 명령어인데 음 이것도 쳐보면되겠다.
+
+-과제
+/dev/sdb 파티션을 2개로 만들어라 
+
+/dev/sdb1 : 700MB -> ext2 -> /hdd1
+/dev/sdb2 : 323MB -> ext3 -> /hdd2
+
+
+df -T | grep hdd
+----------------------------------------------------
+b를 기준으로 가진다.
+새로운 파티션 만드는건 : n
+p : primary key
+partition number 에 :1
+시작: 실린더 디스크위치인가
+끝 : 끝위치
+
+print : p
+w : write
+
+mkfs -t
+mkfs.[type 명] 
+
+mke2fs 라는 명령어를 ext3 ext4 만들려면 이 명령어 써야한다.
+j 옵션을 주면 3 나 4를 만들수있다. jernaling? 
+
+mke2fs config 파일에 정의해놔서 ext4가 만들어진다 .
+
+MB MiB 메가바이트하고 MiB 차이 치면 용량차이가나온다

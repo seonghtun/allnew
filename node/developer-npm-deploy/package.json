@@ -1,0 +1,23 @@
+{
+  "name":"developer-npm-deploy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "log-run":"bin/cli.js"
+  },
+  "keywords": [
+    "npm-deploy"
+    ],
+  "author": "",
+  "license": "MIT",
+  "files" :[
+    "cli"
+  ],
+  "dependencies": {
+    "commander": "^11.0.0"
+  }
+}

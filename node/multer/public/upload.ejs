@@ -1,0 +1,35 @@
+<h1>Multer and File Managemetnt Console</h1>
+<hr>
+
+<h3>1. Single File upload</h3>
+<form action="/uploadFile" enctype="multipart/form-data" method="post">
+    <input type="file" name="attachment">
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+<hr>
+
+<h3>2. Single File upload (Keep original Filename)</h3>
+<form action="/uploadFileWithOriginalFilename" enctype="multipart/form-data" method="post">
+    <input type="file" name="attachment">
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+<hr>
+
+<h3>3. Multi File upload</h3>
+<form action="/uploadFiles" enctype="multipart/form-data" method="post">
+    <input type="file" multiple name="attachments">
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+<hr>
+
+<h3>4. Multi File upload (Keep original Filename)</h3>
+<form action="/uploadFilesWithOriginalFilename" enctype="multipart/form-data" method="post">
+    <input type="file" multiple name="attachments">
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+<hr>
+
+<iframe name="targetURL" class="iframe-previewcenter" width="70%"
+        height="500"
+        src="/list" >
+</iframe>
