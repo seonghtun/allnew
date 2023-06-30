@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: remote
+  labels:
+    app: remote
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: remote
+  template:
+    metadata:
+      labels:
+        app: remote
+    spec:
+      containers:
+      - name: remote
+        image: dockermana79/remoteapi
+        ports:
+        - containerPort: 8000

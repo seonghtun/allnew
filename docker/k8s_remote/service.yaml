@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: remote
+  labels:
+    run: remote
+spec:
+  type: NodePot
+  ports:
+  - nodePort: 30800
+    port: 8080
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: remote
+  type: LoadBalancer
+  externalIPs:
+  - 3.34.74.50
