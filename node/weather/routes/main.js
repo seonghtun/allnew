@@ -52,8 +52,8 @@ app.get('/getdata', (req,res, next) => {
             </title>
         </head>
         <body>
-        <img src="${imgSrc1}" width="500px" height="500px"></img>
-        <img src="${imgSrc2}" width="500px" height="500px"></img>
+        <img src="${imgSrc1}" width="500" height="500"></img>
+        <img src="${imgSrc2}" width="500" height="500"></img>
         </body>
         </html>
         `;
