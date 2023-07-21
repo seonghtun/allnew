@@ -18,7 +18,7 @@ async def hello_with_name(name:str):
 
 @app.get(path='/hello/qeury')
 async def hello_with_querystring(name:str):
-    return "Hello with name. your name is " + names
+    return "Hello with name. your name is " + name
 
 
 @app.post(path='/hello/post')

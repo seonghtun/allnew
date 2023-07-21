@@ -8,6 +8,7 @@ print('\n# 누락된 데이터가 있는 샘플 데이터프레임')
 myframe = pd.read_csv(filename, index_col='이름')
 print(myframe)
 
+
 print('\n# fillna() 메소드를 이용한 다른 값 대체하기')
 print(myframe.fillna(0, inplace=False))
 
